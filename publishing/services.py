@@ -23,6 +23,14 @@ def approve_article(article_id, editor):
     delivery attempt so the separate HTTP receiver can read the article.
     A repeated call reuses the ledger; check its email_sent, http_sent
     and last_error fields rather than assuming every delivery succeeded.
+
+    :param int article_id: Primary key of the article being published.
+    :param editor: Authenticated user whose role must be editor.
+    :type editor: publishing.models.User
+    :return: Delivery ledger, including any outstanding notification errors.
+    :rtype: publishing.models.ApprovalDelivery
+    :raises django.core.exceptions.PermissionDenied: For a non-editor.
+    :raises publishing.models.Article.DoesNotExist: For a missing article.
     """
     if editor.role != User.Role.EDITOR:
         raise PermissionDenied("Only editors may approve articles.")
@@ -61,6 +69,11 @@ def deliver_approval(delivery_id):
     flag is retained when only the HTTP step needs another attempt.
     This reduces retry duplicates, but SMTP is not exactly-once
     across a crash between sending and persisting the completion flag.
+
+    :param int delivery_id: Primary key of an existing delivery ledger.
+    :return: The ledger with independently persisted email/HTTP flags.
+    :rtype: publishing.models.ApprovalDelivery
+    :raises publishing.models.ApprovalDelivery.DoesNotExist: If missing.
     """
     with transaction.atomic():
         delivery = ApprovalDelivery.objects.select_for_update().get(
