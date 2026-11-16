@@ -28,6 +28,12 @@ def check_owner(user, item):
 
     Editors may manage any item; a journalist must be its author.
     Return None on success or raise PermissionDenied (HTTP 403).
+
+    :param user: The authenticated caller, not a submitted author ID.
+    :type user: publishing.models.User
+    :param item: Persisted Article or Newsletter with an author_id.
+    :return: None when the caller may edit the object.
+    :raises django.core.exceptions.PermissionDenied: For an unauthorised user.
     """
     if user.role == User.Role.EDITOR:
         return
