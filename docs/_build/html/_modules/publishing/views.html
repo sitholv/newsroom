@@ -68,7 +68,8 @@
 <span class="sd">    :type user: publishing.models.User</span>
 <span class="sd">    :param item: Persisted Article or Newsletter with an author_id.</span>
 <span class="sd">    :return: None when the caller may edit the object.</span>
-<span class="sd">    :raises django.core.exceptions.PermissionDenied: For an unauthorised user.</span>
+<span class="sd">    :raises django.core.exceptions.PermissionDenied:</span>
+<span class="sd">        If the caller is not authorised to change the item.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">Role</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">:</span>
         <span class="k">return</span>

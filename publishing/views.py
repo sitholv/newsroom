@@ -33,7 +33,8 @@ def check_owner(user, item):
     :type user: publishing.models.User
     :param item: Persisted Article or Newsletter with an author_id.
     :return: None when the caller may edit the object.
-    :raises django.core.exceptions.PermissionDenied: For an unauthorised user.
+    :raises django.core.exceptions.PermissionDenied:
+        If the caller is not authorised to change the item.
     """
     if user.role == User.Role.EDITOR:
         return

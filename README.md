@@ -5,30 +5,78 @@ Vusi Sithole · VS26060020556
 A Django news application with readers, journalists, editors, publisher
 memberships, subscriptions, newsletters and an authenticated REST API.
 
-## Setup with MariaDB
+## Configure local secrets
+
+Clone this repository and work from its root folder. Copy `.env.example` to
+`.env`, then fill its four blank values with distinct local secrets. Generate
+each value with `python3 -c "import secrets; print(secrets.token_urlsafe(50))"`.
+Keep `.env` private; it is excluded from Git and the Docker build context.
+No reviewer password, token, database or real subscriber list is shipped.
+
+## Build and run with Docker
+
+Install Docker Engine and Compose, then start your local engine. From this
+folder, after configuring `.env`:
+
+```bash
+docker compose up --build -d --wait
+docker compose ps
+docker compose exec web python manage.py createsuperuser
+```
+
+Open http://localhost:8018/. The image installs its dependencies, collects
+static assets and runs as a non-root user. Startup applies migrations before
+Gunicorn starts. Two workers with threads allow the approval view to make a
+real HTTP request back to its own internal receiver. WhiteNoise serves the
+collected CSS and JavaScript when DEBUG is off.
+
+Compose uses its own `vs26060020556-consolidation` project, network and database
+volume. Only loopback ports 8018 and 33317 are exposed. The database health check
+must pass before the web service starts; the web image has its own HTTP health
+check. Inspect `docker compose logs web` if startup fails. Use
+`docker compose stop` to stop only this project. Do not use `down -v` unless you
+intend to permanently delete its saved database. Restarting does not reset it.
+
+To test the built container against its separate MariaDB test database:
+
+```bash
+docker compose run --rm --no-deps --entrypoint python web manage.py check
+docker compose run --rm --no-deps --entrypoint python web manage.py test publishing --noinput
+```
+
+Docker is the cross-platform route: on another computer, clone the repository,
+create a new private `.env` and run the same Compose command. Do not copy your
+local database or secret file to a public service. A remote-machine verification
+must be performed separately; a local image build alone is not that evidence.
+
+## Run with a virtual environment and MariaDB
 
 Use Python 3.12+, Docker Engine and Docker Compose. On Ubuntu/WSL, mysqlclient
 also needs the native build dependencies `python3-dev`, `build-essential`,
 `pkg-config` and `default-libmysqlclient-dev`. Install these through your system
 package manager before installing Python dependencies.
 
-From this directory, choose local-only passwords and keep them out of Git:
+From this directory, activate a virtual environment and install dependencies.
+The following shell commands are for Linux/WSL/macOS. Windows PowerShell uses
+`.venv\Scripts\Activate.ps1`; Docker avoids native compiler setup on Windows.
 
 ```bash
-export DB_PASSWORD='choose-a-local-database-password'
-export DB_ROOT_PASSWORD='choose-a-different-local-root-password'
-export INTERNAL_APPROVAL_SECRET='choose-a-long-random-local-secret'
-docker compose up -d --wait database
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+set -a
+. ./.env
+set +a
+docker compose up -d --wait database
+docker compose stop web
+python manage.py collectstatic --noinput
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py runserver 127.0.0.1:8008
+python manage.py runserver 127.0.0.1:8018
 ```
 
-Open http://127.0.0.1:8008/. MariaDB is bound only to 127.0.0.1:33316 and uses
-the dedicated vs26060020556-newsroom Compose project and its own named volume.
+Open http://127.0.0.1:8018/. MariaDB is bound only to 127.0.0.1:33317 and uses
+the dedicated consolidation Compose project and its own named volume.
 The initialisation SQL grants the application user access to test_newsroom
 so Django can create and remove its separate test database. These settings are
 for local development, not shared production infrastructure.
@@ -73,7 +121,7 @@ retries incomplete steps without resending an email already recorded as sent.
 
 The local mail backend prints to the server terminal. It does not deliver real
 email. INTERNAL_APPROVAL_URL defaults to
-http://127.0.0.1:8008/api/approved/; change it when using another port. The receiver
+http://127.0.0.1:8018/api/approved/; change it when using another port. The receiver
 requires INTERNAL_APPROVAL_SECRET in its internal header and logs each article
 once. Requests have finite connection/read timeouts. A missing secret or service
 failure leaves an accurate pending status rather than pretending delivery worked.
@@ -136,6 +184,28 @@ not contact a public service or send real email.
 Planning/ contains functional/non-functional requirements, UI plans, database
 normalisation and approval-flow diagrams. Each important class, view, service
 and test has a docstring; targeted comments explain security and retry choices.
+
+## Build the documentation
+
+In the activated environment, with runtime dependencies installed:
+
+```bash
+python -m pip install -r requirements-docs.txt
+python -m sphinx -W --keep-going -b html -d docs/_build/doctrees docs docs/_build/html
+```
+
+Open `docs/_build/html/index.html`. The user guide explains roles, approval,
+notification retries and API use. The architecture page explains the security
+and transaction boundaries. The code reference is generated from module,
+class and function docstrings, with links to highlighted source code. Sphinx
+initialises Django before importing models; documentation imports explicitly
+select SQLite and do not require MariaDB to be running.
+
+Built HTML is deliberately committed for this capstone. Binary doctree caches,
+virtual environments, database files and secrets are excluded. The Git history
+contains a `docs` branch with separate commits for each documented script and
+a `container` branch created from the original main branch. Both are merged
+into main; the setup instructions were updated after the merges.
 
 ## Before public deployment
 

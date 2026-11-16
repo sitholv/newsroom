@@ -82,9 +82,9 @@
 <span class="sd">    already assigned. __init__ filters publishers to that author and</span>
 <span class="sd">    gives the content textarea 12 rows for longer drafts.</span>
 
-<span class="sd">    Bind submitted data using Django's usual ModelForm arguments. For new</span>
-<span class="sd">    articles, provide ``instance=Article(author=request.user)`` before calling</span>
-<span class="sd">    is_valid(), so affiliation validation sees the server-assigned identity.</span>
+<span class="sd">    Bind data using ModelForm arguments. For new articles,</span>
+<span class="sd">    pass ``instance=Article(author=request.user)`` before is_valid(), so</span>
+<span class="sd">    affiliation validation sees the server-assigned identity.</span>
 <span class="sd">    A failed form retains field errors for the shared browser template.</span>
 <span class="sd">    """</span>
 

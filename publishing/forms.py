@@ -41,9 +41,9 @@ class ArticleForm(forms.ModelForm):
     already assigned. __init__ filters publishers to that author and
     gives the content textarea 12 rows for longer drafts.
 
-    Bind submitted data using Django's usual ModelForm arguments. For new
-    articles, provide ``instance=Article(author=request.user)`` before calling
-    is_valid(), so affiliation validation sees the server-assigned identity.
+    Bind data using ModelForm arguments. For new articles,
+    pass ``instance=Article(author=request.user)`` before is_valid(), so
+    affiliation validation sees the server-assigned identity.
     A failed form retains field errors for the shared browser template.
     """
 

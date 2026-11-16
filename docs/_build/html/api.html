@@ -275,9 +275,9 @@ accounts.</p>
 changes through submitted fields. Pass an instance with its author
 already assigned. __init__ filters publishers to that author and
 gives the content textarea 12 rows for longer drafts.</p>
-<p>Bind submitted data using Django’s usual ModelForm arguments. For new
-articles, provide <code class="docutils literal notranslate"><span class="pre">instance=Article(author=request.user)</span></code> before calling
-is_valid(), so affiliation validation sees the server-assigned identity.
+<p>Bind data using ModelForm arguments. For new articles,
+pass <code class="docutils literal notranslate"><span class="pre">instance=Article(author=request.user)</span></code> before is_valid(), so
+affiliation validation sees the server-assigned identity.
 A failed form retains field errors for the shared browser template.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="publishing.forms.ArticleForm.media">
@@ -341,7 +341,7 @@ Return None on success or raise PermissionDenied (HTTP 403).</p>
 <dd class="field-even"><p>None when the caller may edit the object.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>django.core.exceptions.PermissionDenied</strong> – For an unauthorised user.</p>
+<dd class="field-odd"><p><strong>django.core.exceptions.PermissionDenied</strong> – If the caller is not authorised to change the item.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -465,15 +465,15 @@ and last_error fields rather than assuming every delivery succeeded.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Delivery ledger, including any outstanding notification errors.</p>
+<dd class="field-even"><p>Delivery ledger, including outstanding notification errors.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#publishing.models.ApprovalDelivery" title="publishing.models.ApprovalDelivery">publishing.models.ApprovalDelivery</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>django.core.exceptions.PermissionDenied</strong> – For a non-editor.</p></li>
-<li><p><a class="reference internal" href="#publishing.models.Article.DoesNotExist" title="publishing.models.Article.DoesNotExist"><strong>publishing.models.Article.DoesNotExist</strong></a> – For a missing article.</p></li>
+<li><p><strong>django.core.exceptions.PermissionDenied</strong> – If the caller is not an editor.</p></li>
+<li><p><a class="reference internal" href="#publishing.models.Article.DoesNotExist" title="publishing.models.Article.DoesNotExist"><strong>publishing.models.Article.DoesNotExist</strong></a> – If the article ID is missing.</p></li>
 </ul>
 </dd>
 </dl>
@@ -500,7 +500,7 @@ across a crash between sending and persisting the completion flag.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#publishing.models.ApprovalDelivery" title="publishing.models.ApprovalDelivery">publishing.models.ApprovalDelivery</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#publishing.models.ApprovalDelivery.DoesNotExist" title="publishing.models.ApprovalDelivery.DoesNotExist"><strong>publishing.models.ApprovalDelivery.DoesNotExist</strong></a> – If missing.</p>
+<dd class="field-even"><p><a class="reference internal" href="#publishing.models.ApprovalDelivery.DoesNotExist" title="publishing.models.ApprovalDelivery.DoesNotExist"><strong>publishing.models.ApprovalDelivery.DoesNotExist</strong></a> – If the ledger ID is missing.</p>
 </dd>
 </dl>
 </dd></dl>

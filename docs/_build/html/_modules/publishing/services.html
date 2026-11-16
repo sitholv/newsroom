@@ -62,10 +62,12 @@
 <span class="sd">    :param int article_id: Primary key of the article being published.</span>
 <span class="sd">    :param editor: Authenticated user whose role must be editor.</span>
 <span class="sd">    :type editor: publishing.models.User</span>
-<span class="sd">    :return: Delivery ledger, including any outstanding notification errors.</span>
+<span class="sd">    :return: Delivery ledger, including outstanding notification errors.</span>
 <span class="sd">    :rtype: publishing.models.ApprovalDelivery</span>
-<span class="sd">    :raises django.core.exceptions.PermissionDenied: For a non-editor.</span>
-<span class="sd">    :raises publishing.models.Article.DoesNotExist: For a missing article.</span>
+<span class="sd">    :raises django.core.exceptions.PermissionDenied:</span>
+<span class="sd">        If the caller is not an editor.</span>
+<span class="sd">    :raises publishing.models.Article.DoesNotExist:</span>
+<span class="sd">        If the article ID is missing.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">editor</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">User</span><span class="o">.</span><span class="n">Role</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="s2">"Only editors may approve articles."</span><span class="p">)</span>
@@ -111,7 +113,8 @@
 <span class="sd">    :param int delivery_id: Primary key of an existing delivery ledger.</span>
 <span class="sd">    :return: The ledger with independently persisted email/HTTP flags.</span>
 <span class="sd">    :rtype: publishing.models.ApprovalDelivery</span>
-<span class="sd">    :raises publishing.models.ApprovalDelivery.DoesNotExist: If missing.</span>
+<span class="sd">    :raises publishing.models.ApprovalDelivery.DoesNotExist:</span>
+<span class="sd">        If the ledger ID is missing.</span>
 <span class="sd">    """</span>
     <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
         <span class="n">delivery</span> <span class="o">=</span> <span class="n">ApprovalDelivery</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
