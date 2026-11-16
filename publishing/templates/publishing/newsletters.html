@@ -1,0 +1,22 @@
+{% extends "publishing/base.html" %}
+{% block title %}
+    Newsletters
+{% endblock %}
+{% block content %}
+    <h1>Newsletters</h1>
+    <section aria-label="Newsletter collections">
+        {% for newsletter in newsletters %}
+            <article class="panel">
+                <h2>
+                    <a href="{% url 'newsletter' newsletter.pk %}">{{ newsletter.title }}</a>
+                </h2>
+                <p>{{ newsletter.description|truncatewords:30 }}</p>
+                <p class="meta">{{ newsletter.author.username }} · {{ newsletter.created_at|date:"j M Y" }}</p>
+            </article>
+        {% empty %}
+            <div class="panel">
+                <p>No newsletters have been created yet.</p>
+            </div>
+        {% endfor %}
+    </section>
+{% endblock %}

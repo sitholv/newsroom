@@ -1,0 +1,72 @@
+{% extends "publishing/base.html" %}
+{% block content %}
+    <header class="page-heading">
+        <h1>
+            {% if user.is_authenticated %}
+                Your newsroom
+            {% else %}
+                Read the newsroom
+            {% endif %}
+        </h1>
+        <p>
+            {% if user.is_authenticated %}
+                {{ user.username }}, read published stories
+                {% if user.role != "reader" %}
+                    and review your editorial work
+                {% endif %}
+                .
+            {% else %}
+                Stories from journalists and publishers, approved by an editor.
+            {% endif %}
+        </p>
+    </header>
+    <div class="workspace-grid">
+        <section class="stories" aria-labelledby="stories-heading">
+            <h2 id="stories-heading">Articles</h2>
+            {% for article in articles %}
+                <article class="panel story">
+                    <h3>
+                        <a href="{% url 'article' article.pk %}">{{ article.title }}</a>
+                    </h3>
+                    <p>{{ article.content|truncatewords:28 }}</p>
+                    <p class="meta">
+                        {{ article.author.username }} ·
+                        {% if article.publisher %}
+                            {{ article.publisher.name }}
+                        {% else %}
+                            Independent journalist
+                        {% endif %}
+                    </p>
+                    <p class="state">
+                        {% if article.approved %}
+                            Approved
+                        {% else %}
+                            Draft · Awaiting editorial approval
+                        {% endif %}
+                    </p>
+                </article>
+            {% empty %}
+                <div class="panel">
+                    <p>No articles are available yet.</p>
+                    {% if user.role == "journalist" %}
+                        <a class="button" href="{% url 'article-create' %}">Write your first article</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </section>
+        <section class="workspace-help panel" aria-labelledby="workspace-heading">
+            <h2 id="workspace-heading">Your reading desk</h2>
+            {% if user.role == "reader" %}
+                <p>Follow publishers and journalists to choose your sources.</p>
+                <a href="{% url 'subscriptions' %}">Manage subscriptions</a>
+            {% elif user.role == "journalist" %}
+                <p>Your drafts stay private until an editor approves them. Editing a published story sends it back for review.</p>
+            {% elif user.role == "editor" %}
+                <p>Open a draft to review its content and approve publication. Delivery status remains visible on the article.</p>
+            {% else %}
+                <p>Create a reader account to follow your favourite sources, or register as a journalist to write.</p>
+                <a href="{% url 'register' %}">Create account</a>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

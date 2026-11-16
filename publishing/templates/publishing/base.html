@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            {% block title %}
+                Newsroom
+            {% endblock %}
+        · Bay Newsroom</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap"
+              rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'publishing/style.css' %}">
+        <script src="{% static 'publishing/navigation.js' %}" defer></script>
+    </head>
+    <body>
+        <a class="skip" href="#content">Skip to content</a>
+        <aside class="sidebar">
+            <a class="brand" href="{% url 'home' %}">Bay Newsroom</a>
+            <button class="menu-toggle"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="navigation"
+                    hidden>Menu</button>
+            <nav id="navigation" aria-label="Main navigation">
+                <a href="{% url 'home' %}">Articles</a>
+                <a href="{% url 'newsletters' %}">Newsletters</a>
+                {% if user.is_authenticated %}
+                    {% if user.role == "reader" %}
+                        <a href="{% url 'subscriptions' %}">Subscriptions</a>
+                    {% endif %}
+                    {% if user.role == "journalist" %}
+                        <a href="{% url 'article-create' %}">Write article</a>
+                    {% endif %}
+                    {% if user.role != "reader" %}
+                        <a href="{% url 'newsletter-create' %}">Create newsletter</a>
+                    {% endif %}
+                    <p class="account">{{ user.username }} · {{ user.get_role_display }}</p>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="secondary">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Log in</a>
+                    <a href="{% url 'register' %}">Create account</a>
+                {% endif %}
+            </nav>
+        </aside>
+        <main id="content" tabindex="-1">
+            {% for message in messages %}
+                <p class="message" role="status">{{ message }}</p>
+            {% endfor %}
+            {% block content %}{% endblock %}
+            <footer>
+                <p>Bay Newsroom · Independent voices and publisher stories.</p>
+            </footer>
+        </main>
+    </body>
+</html>

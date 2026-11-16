@@ -1,0 +1,12 @@
+{% extends "publishing/base.html" %}
+{% block content %}
+    <h1>Delete content</h1>
+    <form method="post" class="panel editor-form">
+        {% csrf_token %}
+        <p>Delete “{{ item.title }}”? This cannot be undone.</p>
+        <div class="actions">
+            <button type="submit">Delete permanently</button>
+            <a href="{% url 'home' %}">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

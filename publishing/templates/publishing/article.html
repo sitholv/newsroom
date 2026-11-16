@@ -1,0 +1,64 @@
+{% extends "publishing/base.html" %}
+{% block title %}
+    {{ article.title }}
+{% endblock %}
+{% block content %}
+    <a href="{% url 'home' %}">Back to articles</a>
+    <article class="reading">
+        <h1>{{ article.title }}</h1>
+        <p class="meta">
+            {{ article.author.username }} · {{ article.created_at|date:"j M Y" }} ·
+            {% if article.publisher %}
+                {{ article.publisher.name }}
+            {% else %}
+                Independent journalist
+            {% endif %}
+        </p>
+        <p class="state">
+            {% if article.approved %}
+                Approved
+            {% else %}
+                Draft · Awaiting editorial approval
+            {% endif %}
+        </p>
+        <div class="article-copy">{{ article.content|linebreaks }}</div>
+    </article>
+    {% if editable %}
+        <section class="panel" aria-labelledby="editorial-heading">
+            <h2 id="editorial-heading">Editorial actions</h2>
+            <div class="actions">
+                <a class="button secondary" href="{% url 'article-edit' article.pk %}">Edit article</a>
+                <a href="{% url 'article-delete' article.pk %}">Delete article</a>
+            </div>
+            {% if user.role == "editor" %}
+                <form method="post" action="{% url 'article-approve' article.pk %}">
+                    {% csrf_token %}
+                    <button type="submit">
+                        {% if article.approved %}
+                            Check notification delivery
+                        {% else %}
+                            Approve publication
+                        {% endif %}
+                    </button>
+                </form>
+                {% if article.delivery %}
+                    <p>
+                        Email:
+                        {% if article.delivery.email_sent %}
+                            completed
+                        {% else %}
+                            pending
+                        {% endif %}
+                        . Internal publication log:
+                        {% if article.delivery.http_sent %}
+                            completed
+                        {% else %}
+                            pending
+                        {% endif %}
+                        .
+                    </p>
+                {% endif %}
+            {% endif %}
+        </section>
+    {% endif %}
+{% endblock %}

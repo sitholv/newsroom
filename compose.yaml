@@ -1,0 +1,23 @@
+name: vs26060020556-newsroom
+
+services:
+  database:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: newsroom
+      MARIADB_USER: newsroom
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD for the local database}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD locally}
+    ports:
+      - "127.0.0.1:33316:3306"
+    volumes:
+      - newsroom-data:/var/lib/mysql
+      - ./docker/test-database.sql:/docker-entrypoint-initdb.d/test-database.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  newsroom-data:

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760">
+<defs><marker id="a" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#333"/></marker></defs>
+<rect width="1100" height="760" fill="white"/>
+<g font-family="Arial,sans-serif" fill="#171717">
+<text x="40" y="40" font-size="25">Newsroom · Normalised database design</text>
+<text x="40" y="66" font-size="14">Vusi Sithole · VS26060020556 · PK = primary key, FK = foreign key</text>
+<g fill="#f3f3f3" stroke="#555"><rect x="50" y="100" width="390" height="150" rx="6"/><rect x="660" y="100" width="390" height="150" rx="6"/><rect x="50" y="340" width="390" height="170" rx="6"/><rect x="660" y="340" width="390" height="170" rx="6"/><rect x="50" y="590" width="390" height="100" rx="6"/><rect x="660" y="590" width="390" height="100" rx="6"/></g>
+<g font-size="18" font-weight="bold"><text x="70" y="130">User (extends AbstractUser)</text><text x="680" y="130">Publisher</text><text x="70" y="370">Article</text><text x="680" y="370">Newsletter</text><text x="70" y="620">ApprovalDelivery</text><text x="680" y="620">ApprovalLog</text></g>
+<g font-size="15">
+<text x="70" y="160">PK id; username; unique email; password hash</text><text x="70" y="185">role: reader / journalist / editor</text><text x="70" y="210">groups and permissions: Django auth tables</text><text x="70" y="235">self M:N follows: reader → journalist</text>
+<text x="680" y="160">PK id; unique name; description</text><text x="680" y="185">M:N journalists → User</text><text x="680" y="210">M:N editors → User</text><text x="680" y="235">M:N subscribers ← reader User</text>
+<text x="70" y="400">PK id; title; content; created_at; approved</text><text x="70" y="425">FK author → journalist User (required)</text><text x="70" y="450">FK publisher → Publisher (optional)</text><text x="70" y="475">Independent work: publisher is NULL</text><text x="70" y="495">Author is preserved with PROTECT</text>
+<text x="680" y="400">PK id; title; description; created_at</text><text x="680" y="425">FK author → editorial User (required)</text><text x="680" y="450">FK publisher → Publisher (optional)</text><text x="680" y="475">M:N articles → Article</text><text x="680" y="495">Forms allow approved articles only</text>
+<text x="70" y="650">Unique FK article; recipients JSON snapshot</text><text x="70" y="675">email_sent; http_sent; last_error; created_at</text>
+<text x="680" y="650">Unique FK article; received_at</text><text x="680" y="675">One idempotent internal HTTP log per article</text>
+</g>
+<g fill="none" stroke="#333" marker-end="url(#a)"><path d="M440 175H660"/><path d="M150 250V340"/><path d="M340 250V285H810V340"/><path d="M950 250V340"/><path d="M750 250V300H530V450H440"/><path d="M660 435H440"/><path d="M150 510V590"/><path d="M340 510V550H850V590"/></g>
+<g font-size="13"><text x="462" y="160">Membership / follows M:N</text><text x="65" y="295">Author 1:N</text><text x="540" y="275">Author 1:N</text><text x="962" y="295">0..1:N</text><text x="545" y="324">Publisher 0..1:N</text><text x="476" y="420">Contents M:N</text><text x="166" y="558">1:0..1</text><text x="550" y="540">Article 1:0..1 log</text></g>
+<text x="40" y="727" font-size="14">M:N links use unique junction-table pairs. Inapplicable role relations stay empty; public role properties return None.</text>
+</g></svg>

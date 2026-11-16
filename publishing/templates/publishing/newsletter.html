@@ -1,0 +1,26 @@
+{% extends "publishing/base.html" %}
+{% block title %}
+    {{ newsletter.title }}
+{% endblock %}
+{% block content %}
+    <h1>{{ newsletter.title }}</h1>
+    <p>{{ newsletter.description|linebreaksbr }}</p>
+    <section aria-label="Included articles">
+        {% for article in articles %}
+            <article class="panel">
+                <h2>
+                    <a href="{% url 'article' article.pk %}">{{ article.title }}</a>
+                </h2>
+                <p>{{ article.content|truncatewords:30 }}</p>
+            </article>
+        {% empty %}
+            <p>No approved articles are included yet.</p>
+        {% endfor %}
+    </section>
+    {% if editable %}
+        <div class="actions">
+            <a class="button" href="{% url 'newsletter-edit' newsletter.pk %}">Edit newsletter</a>
+            <a href="{% url 'newsletter-delete' newsletter.pk %}">Delete newsletter</a>
+        </div>
+    {% endif %}
+{% endblock %}
