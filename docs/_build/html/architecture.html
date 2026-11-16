@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Architecture and testing &#8212; Bay Newsroom documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code reference" href="api.html" />
+    <link rel="prev" title="Using the newsroom" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="architecture-and-testing">
+<h1>Architecture and testing<a class="headerlink" href="#architecture-and-testing" title="Link to this heading">¶</a></h1>
+<section id="responsibilities">
+<h2>Responsibilities<a class="headerlink" href="#responsibilities" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">models</span></code> owns roles, publication data and constraints. <code class="docutils literal notranslate"><span class="pre">forms</span></code> allowlists
+editable fields and restricts affiliation choices. <code class="docutils literal notranslate"><span class="pre">views</span></code> handles browser
+requests with authentication, ownership and CSRF boundaries. <code class="docutils literal notranslate"><span class="pre">api</span></code> and
+<code class="docutils literal notranslate"><span class="pre">serializers</span></code> provide the token/session API and validate submitted data.
+<code class="docutils literal notranslate"><span class="pre">services</span></code> owns approval and delivery, so HTML and API paths share the same
+workflow rather than duplicating side effects.</p>
+<p>User role groups are synchronised with application permissions. An inactive
+account is never a subscription candidate. Role-inapplicable relationship
+properties return None; the underlying many-to-many relations are not nullable.
+The Planning directory contains the database and approval sequence diagrams.</p>
+</section>
+<section id="security-decisions">
+<h2>Security decisions<a class="headerlink" href="#security-decisions" title="Link to this heading">¶</a></h2>
+<p>Querysets hide drafts from readers and other journalists, including guessed
+URLs. Mutation endpoints enforce permissions independently of visible buttons.
+Browser mutations use POST and CSRF checks; deletion requires confirmation.
+Publisher membership is checked by both forms and serializers. Newsletter
+representations also filter articles that have returned to draft.</p>
+<p>The recipient union adds a publisher filter only for a non-NULL publisher.
+Otherwise readers with no publisher subscriptions could accidentally match
+independent articles. Approval and delivery ledgers are persisted and locked
+so ordinary retries retain successful steps. The separate HTTP receiver logs
+each approved article once.</p>
+</section>
+<section id="verification">
+<h2>Verification<a class="headerlink" href="#verification" title="Link to this heading">¶</a></h2>
+<p>The suite covers roles, ownership, draft privacy, subscriptions, newsletters,
+CSRF/XSS, deletion, email/HTTP failures and repeated approvals. Security tests
+use an explicitly CSRF-enforcing client and script payloads to explain the
+threat rather than merely asserting an HTTP code. A LiveServerTestCase makes
+a real requests POST to the application’s internal API. Expected simulated
+failure warnings are not test failures when the suite finishes with OK.</p>
+<p>Build documentation with warnings treated as errors. Documentation imports
+use an explicit SQLite setting so reading docstrings requires no live DB;
+application validation and release tests still run against MariaDB.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Bay Newsroom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using the newsroom</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture and testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#responsibilities">Responsibilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#security-decisions">Security decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#verification">Verification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Code reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Using the newsroom</a></li>
+      <li>Next: <a href="api.html" title="next chapter">Code reference</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Vusi Sithole.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/architecture.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
