@@ -5,3 +5,11 @@ __pycache__/
 .env
 staticfiles/
 .taste-skill/
+venv/
+env/
+.env.*
+!.env.example
+*.log
+.coverage
+.pytest_cache/
+docs/_build/doctrees/

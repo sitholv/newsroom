@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using the newsroom &#8212; Bay Newsroom documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Architecture and testing" href="architecture.html" />
+    <link rel="prev" title="Bay Newsroom documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="using-the-newsroom">
+<h1>Using the newsroom<a class="headerlink" href="#using-the-newsroom" title="Link to this heading">¶</a></h1>
+<section id="readers-journalists-and-editors">
+<h2>Readers, journalists and editors<a class="headerlink" href="#readers-journalists-and-editors" title="Link to this heading">¶</a></h2>
+<p>Register as a reader to follow publishers and journalists. The reading list,
+article pages and newsletters show approved content only. Save subscriptions
+from the subscriptions screen; they determine your subscribed API feed and
+future approval notifications. The local mail backend prints messages in the
+server terminal rather than delivering email to real inboxes.</p>
+<p>Register as a journalist to create articles and newsletters. Select only a
+publisher you belong to, or leave the publisher blank for independent work.
+You can change or delete your own work. Editing an approved article returns
+it to draft, so an editor must review it again before readers can see it.</p>
+<p>Editors are assigned by a trusted administrator through <code class="docutils literal notranslate"><span class="pre">/admin/</span></code>. Public
+registration cannot grant this role. Editors can review drafts and approve,
+update or delete articles. Newsletter forms accept approved articles only.
+Making someone a Django superuser does not automatically give them the
+application’s editor role: set the role explicitly.</p>
+</section>
+<section id="approval-and-recovery">
+<h2>Approval and recovery<a class="headerlink" href="#approval-and-recovery" title="Link to this heading">¶</a></h2>
+<p>Approval is committed before an actual HTTP POST to the internal receiver.
+Subscribers to the journalist and publisher are combined without duplicates.
+Addresses are sent as BCC, not exposed to other readers. A persisted ledger
+tracks email and HTTP independently. Repeat the editor’s approval action to
+retry incomplete steps; an already recorded email success is not repeated.</p>
+<p>A pending notification does not undo article approval. Check the delivery
+flags and error text in the read-only admin records. Verify the internal URL
+and matching server secret before retrying an HTTP error. Never paste that
+secret into a browser form, public issue, Git commit or API token response.
+SMTP cannot guarantee exactly-once delivery if the process crashes between
+sending a message and saving its completion flag.</p>
+</section>
+<section id="api-use">
+<h2>API use<a class="headerlink" href="#api-use" title="Link to this heading">¶</a></h2>
+<p>POST a registered username/password to <code class="docutils literal notranslate"><span class="pre">/api/token/</span></code> to obtain a token.
+Send <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Token</span> <span class="pre">YOUR_TOKEN</span></code> on API requests. Obtain your own
+token at runtime; no shared credentials are bundled with the project.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/articles/</span></code>: approved article list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/articles/subscribed/</span></code>: reader’s followed sources.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/articles/&lt;id&gt;/</span></code>: visible article detail.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/articles/</span></code>: journalist creates an article.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span></code> / <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/api/articles/&lt;id&gt;/</span></code>: authorised owner or editor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/articles/&lt;id&gt;/approve/</span></code>: editor-only approval and retry.</p></li>
+</ul>
+<p>Clients cannot choose an author or directly set an approval flag. The
+internal <code class="docutils literal notranslate"><span class="pre">/api/approved/</span></code> receiver requires the server secret and an
+already approved article; it is not a public route for bypassing approval.</p>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
+<p>The repository README contains the tested virtual-environment and Docker
+commands, environment-variable instructions, database health checks and
+troubleshooting. Use a separate local database when running the tests.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Bay Newsroom</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using the newsroom</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#readers-journalists-and-editors">Readers, journalists and editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#approval-and-recovery">Approval and recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-use">API use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture and testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Code reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Bay Newsroom documentation</a></li>
+      <li>Next: <a href="architecture.html" title="next chapter">Architecture and testing</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Vusi Sithole.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.1</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/usage.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
