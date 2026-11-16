@@ -13,3 +13,4 @@ env/
 .coverage
 .pytest_cache/
 docs/_build/doctrees/
+**/.doctrees/
